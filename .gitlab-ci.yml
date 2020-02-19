@@ -1,0 +1,35 @@
+image: golang:1.13
+
+services:
+- docker:dind
+
+variables:
+  DOCKER_DRIVER: overlay
+
+stages:
+- unit-test
+- build-master
+
+unit-test:
+  stage: unit-test
+  script:
+    - make install
+    - make build-test
+    - make test
+  tags:
+    - gitlab
+
+build-master:
+  stage: build-master
+  image: gitcall2.dev.corezoid.com/go-docker-ci:1.0
+  variables:
+    DOCKER_REGISTRY: gitcall2.dev.corezoid.com
+    VERSION: $CI_COMMIT_TAG
+  script:
+    - docker version
+    - DOCKER_REGISTRY=$DOCKER_REGISTRY VERSION=$VERSION make build-docker
+    - DOCKER_REGISTRY=$DOCKER_REGISTRY VERSION=$VERSION make push-docker
+  only:
+    - tags
+  tags:
+    - gitlab
