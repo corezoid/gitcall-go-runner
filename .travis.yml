@@ -7,11 +7,11 @@ matrix:
   include:
     - go: 1.13.x
       sudo: false
-      env: LINTER=true GOFLAGS=-mod=vendor GO111MODULE=on
+      env: LINTER=true GO111MODULE=on
     - go: 1.13.x
       sudo: required
       services: docker
-      env: TESTS=true GOFLAGS=-mod=vendor GO111MODULE=on
+      env: TESTS=true GO111MODULE=on
 
 install:
   - make install
@@ -23,4 +23,3 @@ before_script:
 script:
   - if [ "$LINTER" = true ]; then golangci-lint version && golangci-lint run; fi
   - if [ "$TESTS" = true ]; then make test; fi
-
