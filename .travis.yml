@@ -23,3 +23,4 @@ before_script:
 script:
   - if [ "$LINTER" = true ]; then golangci-lint version && golangci-lint run; fi
   - if [ "$TESTS" = true ]; then make test; fi
+
