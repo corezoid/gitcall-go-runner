@@ -1,5 +1,5 @@
 GO?=go
-GOARGS?=
+GOFLAGS?=-mod=vendor
 BINARY?=gorunner
 
 .PHONY: install
@@ -10,7 +10,7 @@ install:
 .PHONY: build
 ## build: build executable file
 build:
-	$(GO) build $(GOARGS) -mod=vendor -o ./build/$(BINARY) ./*.go
+	$(GO) build -o ./build/$(BINARY) ./*.go
 
 .PHONY: build-test
 ## build-test: build tests

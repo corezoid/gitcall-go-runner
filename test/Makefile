@@ -1,13 +1,13 @@
 .PHONY: build
 ## build: build executable file
 build:
-	CGO_ENABLED=1 go build -race -mod=vendor -o ../build/gorunner-success ./apps/success/*.go
-	CGO_ENABLED=1 go build -race -mod=vendor -o ../build/gorunner-error ./apps/error/*.go
+	CGO_ENABLED=1 go build -race -o ../build/gorunner-success ./apps/success/*.go
+	CGO_ENABLED=1 go build -race -o ../build/gorunner-error ./apps/error/*.go
 
 .PHONY: test
 ## test: run tests
 test:
-	@go test -mod=vendor -race -count=1 ./tests/... -v
+	@go test -race -count=1 ./tests/... -v
 
 .PHONY: help
 ## help: prints this help message
