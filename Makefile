@@ -1,23 +1,6 @@
-APP=gorunner
-BUILD_DIR := "."
-DOCKER_BUILDKIT=1
-DOCKER_IMAGE?=dundergitcall/go-runner
-
-ifndef COMMIT
-    export COMMIT=$(shell git rev-list -1 HEAD)
-endif
-ifndef BUILD_DATE
-    export BUILD_DATE=$(shell date +"%Y-%m-%d_%T%z")
-endif
-ifndef VERSION
-    export VERSION=$(BUILD_DATE)
-endif
-
 GO?=go
 GOARGS?=
-CGO_ENABLED?=0
-BINARY?=${APP}
-LDFLAGS:="${LDFLAGS} -X main.buildCommit=$(COMMIT) -X main.buildVersion=$(VERSION) -X main.buildDate=$(BUILD_DATE)"
+BINARY?=gorunner
 
 .PHONY: install
 install:
@@ -27,7 +10,7 @@ install:
 .PHONY: build
 ## build: build executable file
 build:
-	$(GO) build $(GOARGS) -mod=vendor -ldflags $(LDFLAGS) $(GORACE) -o ./build/$(BINARY) ./*.go
+	$(GO) build $(GOARGS) -mod=vendor -o ./build/$(BINARY) ./*.go
 
 .PHONY: build-test
 ## build-test: build tests
@@ -44,15 +27,6 @@ test:
 clean:
 	if [ -e ./build ] ; then rm -r ./build; fi
 	if [ -e ./vendor ] ; then rm -r ./vendor; fi
-
-.PHONY: check-docker-envs
-check-docker-envs:
-ifndef DOCKER_REGISTRY
-	$(error DOCKER_REGISTRY is undefined)
-endif
-ifndef DOCKER_IMAGE
-	$(error DOCKER_IMAGE is undefined)
-endif
 
 .PHONY: help
 ## help: prints this help message

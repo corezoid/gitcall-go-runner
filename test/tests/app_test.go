@@ -6,7 +6,7 @@ import (
 	"testing"
 	"time"
 
-	"git.corezoid.com/gitcall/go-runner/test"
+	"github.com/corezoid/gitcall-go-runner/test"
 	"github.com/stretchr/testify/assert"
 )
 

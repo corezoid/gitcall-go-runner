@@ -7,7 +7,7 @@ build:
 .PHONY: test
 ## test: run tests
 test:
-	@go test -mod=vendor -race -count=1 -cover ./tests/... -v
+	@go test -mod=vendor -race -count=1 ./tests/... -v
 
 .PHONY: help
 ## help: prints this help message
