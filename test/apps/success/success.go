@@ -3,7 +3,7 @@ package main
 import (
 	"context"
 
-	"git.corezoid.com/gitcall/go-runner/runner"
+	"github.com/corezoid/gitcall-go-runner/runner"
 )
 
 func usercode(ctx context.Context, data map[string]interface{}) error {
