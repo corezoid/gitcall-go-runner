@@ -5,20 +5,18 @@ import (
 	"log"
 	"os"
 	"os/signal"
-	"sync"
 	"syscall"
 	"time"
 )
 
 func Run(usercodeFunc UsercodeFunc) {
 	udsPath := os.Getenv("DUNDERGITCALL_UDS")
-	if "" == udsPath {
+	if udsPath == "" {
 		log.Fatal("DUNDERGITCALL_UDS env is required but not set")
 	}
 
 	_ = os.Remove(udsPath)
 
-	wg := sync.WaitGroup{}
 	ctx, cancel := context.WithCancel(context.Background())
 	go sigHandler(cancel)
 
@@ -33,15 +31,9 @@ func Run(usercodeFunc UsercodeFunc) {
 		server.Stop()
 	}()
 
-	wg.Add(1)
-	go func() {
-		defer wg.Done()
-		defer log.Print("server stopped")
+	defer log.Print("server stopped")
 
-		server.Run()
-	}()
-
-	wg.Wait()
+	server.Run()
 }
 
 func sigHandler(cancel context.CancelFunc) {

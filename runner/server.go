@@ -17,6 +17,7 @@ type Usercode struct {
 	context context.Context
 }
 
+// nolint: gocritic
 func (h *Usercode) Run(request map[string]interface{}, response *map[string]interface{}) error {
 	d, ok := request["data"]
 	if !ok {
@@ -66,7 +67,7 @@ func NewServer(ctx context.Context, socket string, usercode UsercodeFunc) (*Serv
 	s := &Server{
 		server:   server,
 		listener: listener,
-		connections: make(map[int]net.Conn, 0),
+		connections: make(map[int]net.Conn),
 		context: ctx,
 	}
 
@@ -77,7 +78,7 @@ func (s *Server) Run() {
 	wg := sync.WaitGroup{}
 	index := 0
 
-	BreakFor:for {
+	for {
 		conn, err := s.listener.Accept()
 
 		s.lock.Lock()
@@ -85,7 +86,7 @@ func (s *Server) Run() {
 		s.lock.Unlock()
 
 		if stopped {
-			break BreakFor
+			break
 		}
 
 		if err != nil {
