@@ -3,7 +3,7 @@
 
 # Usage
 To build your Go usercode runner you need to include 
-`github.com/corezoid/gitcall-go-runner/runner` package,
+`github.com/corezoid/gitcall-go-runner/gitcall` package,
  implement `usercode` handler function and `main` function.
 See example code:
 
@@ -13,18 +13,15 @@ package main
 import (
 	"context"
 
-	"github.com/corezoid/gitcall-go-runner/runner"
+	"github.com/corezoid/gitcall-go-runner/handle"
 )
 
-func usercode(ctx context.Context, data map[string]interface{}) error {
-
-	data["foo"] = "bar"
-
-	return nil
-}
-
 func main() {
-	runner.Run(usercode)
+	gitcall.Handle(func (_ context.Context, data map[string]interface{}) error {
+        data["foo"] = "bar"
+       
+        return nil
+   })
 }
 ```
 

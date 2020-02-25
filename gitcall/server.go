@@ -1,4 +1,4 @@
-package runner
+package gitcall
 
 import (
 	"context"
@@ -7,6 +7,7 @@ import (
 	"net"
 	"net/rpc"
 	"net/rpc/jsonrpc"
+	"strings"
 	"sync"
 )
 
@@ -18,7 +19,13 @@ type Usercode struct {
 }
 
 // nolint: gocritic
-func (h *Usercode) Run(request map[string]interface{}, response *map[string]interface{}) error {
+func (h *Usercode) Run(request map[string]interface{}, response *map[string]interface{}) (err error) {
+	defer func() {
+		if p := recover(); p != nil {
+			err = fmt.Errorf("task panicked")
+		}
+	}()
+
 	d, ok := request["data"]
 	if !ok {
 		return fmt.Errorf("'data' was not found")
@@ -39,15 +46,15 @@ func (h *Usercode) Run(request map[string]interface{}, response *map[string]inte
 }
 
 type Server struct {
-	server *rpc.Server
-	listener net.Listener
+	server      *rpc.Server
+	listener    net.Listener
 	connections map[int]net.Conn
-	context context.Context
-	stopped bool
-	lock sync.Mutex
+	context     context.Context
+	stopped     bool
+	lock        sync.Mutex
 }
 
-func NewServer(ctx context.Context, socket string, usercode UsercodeFunc) (*Server, error) {
+func NewServer(ctx context.Context, uri string, usercode UsercodeFunc) (*Server, error) {
 	handler := &Usercode{
 		handler: usercode,
 		context: ctx,
@@ -59,16 +66,16 @@ func NewServer(ctx context.Context, socket string, usercode UsercodeFunc) (*Serv
 		return nil, fmt.Errorf("register handler failed: %w", err)
 	}
 
-	listener, err := net.Listen("unix", socket)
+	listener, err := net.Listen("tcp", uri)
 	if err != nil {
 		return nil, fmt.Errorf("listen failed: %v", err)
 	}
 
 	s := &Server{
-		server:   server,
-		listener: listener,
+		server:      server,
+		listener:    listener,
 		connections: make(map[int]net.Conn),
-		context: ctx,
+		context:     ctx,
 	}
 
 	return s, nil
@@ -104,7 +111,6 @@ func (s *Server) Run() {
 		wg.Add(1)
 		go func(index int) {
 			defer wg.Done()
-			defer log.Printf("connection handler closed: %d", index)
 
 			s.server.ServeCodec(jsonrpc.NewServerCodec(conn))
 
@@ -123,16 +129,13 @@ func (s *Server) Stop() {
 
 	s.stopped = true
 
-	log.Print("close listener")
 	if err := s.listener.Close(); err != nil {
 		log.Printf("close listener failed: %v", err)
 	}
 
 	for i, conn := range s.connections {
-		log.Printf("close connection: %d", i)
-		if err := conn.Close(); err != nil {
+		if err := conn.Close(); err != nil && !strings.Contains(err.Error(), "use of closed network connection") {
 			log.Printf("close connection failed: idx:%d err: %v", i, err)
 		}
 	}
 }
-

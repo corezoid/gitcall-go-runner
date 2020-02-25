@@ -1,4 +1,4 @@
-package runner
+package gitcall
 
 import (
 	"context"
@@ -9,18 +9,16 @@ import (
 	"time"
 )
 
-func Run(usercodeFunc UsercodeFunc) {
-	udsPath := os.Getenv("DUNDERGITCALL_UDS")
-	if udsPath == "" {
-		log.Fatal("DUNDERGITCALL_UDS env is required but not set")
+func Handle(usercodeFunc UsercodeFunc) {
+	uri := os.Getenv("DUNDERGITCALL_URI")
+	if uri == "" {
+		log.Fatal("DUNDERGITCALL_URI env is required but not set")
 	}
-
-	_ = os.Remove(udsPath)
 
 	ctx, cancel := context.WithCancel(context.Background())
 	go sigHandler(cancel)
 
-	server, err := NewServer(ctx, udsPath, usercodeFunc)
+	server, err := NewServer(ctx, uri, usercodeFunc)
 	if err != nil {
 		log.Fatalf("server: %v", err)
 	}
