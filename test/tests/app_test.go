@@ -10,13 +10,13 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestShouldHandleTaskSuccessfully(t *testing.T)  {
+func TestShouldHandleTaskSuccessfully(t *testing.T) {
 	request := `{ "method": "Usercode.Run", "params": [{"data": {"key": "value"}}], "id":1}\\n`
 	expectedResponse := `{"id":1,"result":{"data":{"foo":123,"key":"value"}},"error":null}
 `
 
 	helper := test.NewHelper()
-	socket := helper.Start("../../build/gorunner-success")
+	addr := helper.Start("../../build/gorunner-success")
 	defer helper.Stop()
 
 	var conn net.Conn
@@ -24,7 +24,7 @@ func TestShouldHandleTaskSuccessfully(t *testing.T)  {
 
 	attempts := 10
 	for {
-		conn, err = net.Dial("unix", socket)
+		conn, err = net.Dial("tcp", addr)
 		if err != nil {
 			attempts--
 			if attempts <= 0 {
@@ -48,13 +48,13 @@ func TestShouldHandleTaskSuccessfully(t *testing.T)  {
 	assert.Equal(t, expectedResponse, string(resp))
 }
 
-func TestShouldHandleTaskError(t *testing.T)  {
+func TestShouldHandleTaskError(t *testing.T) {
 	request := `{ "method": "Usercode.Run", "params": [{"data": {"key": "value"}}], "id":1}\\n`
 	expectedResponse := `{"id":1,"result":null,"error":"error-happened"}
 `
 
 	helper := test.NewHelper()
-	socket := helper.Start("../../build/gorunner-error")
+	addr := helper.Start("../../build/gorunner-error")
 	defer helper.Stop()
 
 	var conn net.Conn
@@ -62,7 +62,7 @@ func TestShouldHandleTaskError(t *testing.T)  {
 
 	attempts := 10
 	for {
-		conn, err = net.Dial("unix", socket)
+		conn, err = net.Dial("tcp", addr)
 		if err != nil {
 			attempts--
 			if attempts <= 0 {
