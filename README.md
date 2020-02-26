@@ -13,7 +13,7 @@ package main
 import (
 	"context"
 
-	"github.com/corezoid/gitcall-go-runner/handle"
+	"github.com/corezoid/gitcall-go-runner/gitcall"
 )
 
 func main() {

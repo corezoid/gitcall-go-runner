@@ -129,7 +129,7 @@ func (s *Server) Stop() {
 
 	s.stopped = true
 
-	if err := s.listener.Close(); err != nil {
+	if err := s.listener.Close(); err != nil && !strings.Contains(err.Error(), "use of closed network connection") {
 		log.Printf("close listener failed: %v", err)
 	}
 
