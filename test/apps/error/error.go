@@ -4,14 +4,14 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/corezoid/gitcall-go-runner/runner"
+	"github.com/corezoid/gitcall-go-runner/gitcall"
 )
 
-func usercode(ctx context.Context, data map[string]interface{}) error {
+func usercode(_ context.Context, _ map[string]interface{}) error {
 
 	return fmt.Errorf("error-happened")
 }
 
 func main() {
-	runner.Run(usercode)
+	gitcall.Handle(usercode)
 }

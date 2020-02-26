@@ -3,14 +3,13 @@ package test
 import (
 	"bytes"
 	"crypto/rand"
-	"encoding/base64"
 	"io/ioutil"
 	"log"
 	"os/exec"
 )
 
 type Helper struct {
-	cmd *exec.Cmd
+	cmd    *exec.Cmd
 	output *bytes.Buffer
 }
 
@@ -25,14 +24,12 @@ func (h *Helper) Start(command string) string {
 		log.Fatalf("gen uuid failed: %v", err)
 	}
 
-	uid := base64.URLEncoding.EncodeToString(b)
-
-	socket := "/tmp/uds-"+uid+".sock"
+	addr := "127.0.0.1:9898"
 
 	output := &bytes.Buffer{}
 
 	cmd := exec.Command(command)
-	cmd.Env = append(cmd.Env, "DUNDERGITCALL_UDS="+socket)
+	cmd.Env = append(cmd.Env, "DUNDERGITCALL_URI="+addr)
 	err = cmd.Start()
 	if err != nil {
 		log.Fatalf("start app failed: %v", err)
@@ -43,7 +40,7 @@ func (h *Helper) Start(command string) string {
 	h.cmd = cmd
 	h.output = output
 
-	return socket
+	return addr
 }
 
 func (h *Helper) Logs() string {
