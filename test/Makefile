@@ -1,8 +1,7 @@
 .PHONY: build
 ## build: build executable file
 build:
-	CGO_ENABLED=1 go build -race -o ../build/gorunner-success ./apps/success/*.go
-	CGO_ENABLED=1 go build -race -o ../build/gorunner-error ./apps/error/*.go
+	CGO_ENABLED=1 go build -race -o ../build/testrunner ./apps/*.go
 
 .PHONY: test
 ## test: run tests

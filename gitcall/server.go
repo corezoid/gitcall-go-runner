@@ -22,7 +22,7 @@ type Usercode struct {
 func (h *Usercode) Run(request map[string]interface{}, response *map[string]interface{}) (err error) {
 	defer func() {
 		if p := recover(); p != nil {
-			err = fmt.Errorf("task panicked")
+			err = fmt.Errorf("usercode:%v", p)
 		}
 	}()
 
@@ -37,7 +37,7 @@ func (h *Usercode) Run(request map[string]interface{}, response *map[string]inte
 	}
 
 	if err := h.handler(h.context, data); err != nil {
-		return err
+		return fmt.Errorf("usercode:%w", err)
 	}
 
 	(*response)["data"] = data
