@@ -6,7 +6,6 @@ import (
 	"os"
 	"os/signal"
 	"syscall"
-	"time"
 )
 
 func Handle(usercodeFunc UsercodeFunc) {
@@ -46,12 +45,6 @@ func sigHandler(cancel context.CancelFunc) {
 	for sig := range signals {
 		if sig == syscall.SIGTERM || sig == syscall.SIGQUIT || sig == syscall.SIGINT || sig == os.Kill {
 			log.Print("signal caught. stopping app")
-			go func() {
-				<-time.After(time.Second * 10)
-
-				log.Print("graceful shutdown timed out")
-				os.Exit(1)
-			}()
 			cancel()
 
 			return
