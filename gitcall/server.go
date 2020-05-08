@@ -9,6 +9,7 @@ import (
 	"net/rpc/jsonrpc"
 	"strings"
 	"sync"
+	"time"
 )
 
 type UsercodeFunc func(ctx context.Context, data map[string]interface{}) error
@@ -133,9 +134,9 @@ func (s *Server) Stop() {
 		log.Printf("close listener failed: %v", err)
 	}
 
-	for i, conn := range s.connections {
-		if err := conn.Close(); err != nil && !strings.Contains(err.Error(), "use of closed network connection") {
-			log.Printf("close connection failed: idx:%d err: %v", i, err)
+	for _, conn := range s.connections {
+		if err := conn.SetReadDeadline(time.Now()); err != nil {
+			log.Printf("set read deadline failed: %v", err)
 		}
 	}
 }
