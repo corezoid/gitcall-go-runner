@@ -3,7 +3,6 @@ package gitcall
 import (
 	"context"
 	"fmt"
-	"log"
 	"net"
 	"net/rpc"
 	"net/rpc/jsonrpc"
@@ -98,7 +97,7 @@ func (s *Server) Run() {
 		}
 
 		if err != nil {
-			log.Printf("connection failed: %v", err)
+			fmt.Printf("connection failed: %v\n", err)
 
 			continue
 		}
@@ -131,12 +130,12 @@ func (s *Server) Stop() {
 	s.stopped = true
 
 	if err := s.listener.Close(); err != nil && !strings.Contains(err.Error(), "use of closed network connection") {
-		log.Printf("close listener failed: %v", err)
+		fmt.Printf("close listener failed: %v\n", err)
 	}
 
 	for _, conn := range s.connections {
 		if err := conn.SetReadDeadline(time.Now()); err != nil {
-			log.Printf("set read deadline failed: %v", err)
+			fmt.Printf("set read deadline failed: %v\n", err)
 		}
 	}
 }
