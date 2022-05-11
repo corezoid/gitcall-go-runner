@@ -2,6 +2,7 @@ package gitcall
 
 import (
 	"context"
+	"fmt"
 	"log"
 	"os"
 	"os/signal"
@@ -28,7 +29,7 @@ func Handle(usercodeFunc UsercodeFunc) {
 		server.Stop()
 	}()
 
-	defer log.Print("server stopped")
+	defer fmt.Println("server stopped")
 
 	server.Run()
 }
@@ -44,12 +45,12 @@ func sigHandler(cancel context.CancelFunc) {
 
 	for sig := range signals {
 		if sig == syscall.SIGTERM || sig == syscall.SIGQUIT || sig == syscall.SIGINT || sig == os.Kill {
-			log.Print("signal caught. stopping app")
+			fmt.Println("signal caught. stopping server")
 			cancel()
 
 			return
 		}
 
-		log.Printf("unknown signal caught: %d", sig)
+		fmt.Printf("unknown signal caught: %d\n", sig)
 	}
 }
